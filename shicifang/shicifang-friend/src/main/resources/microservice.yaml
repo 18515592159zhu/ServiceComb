@@ -1,0 +1,29 @@
+APPLICATION_ID: start.servicecomb.io #应用名称
+service_description:
+  name: shicifang-friend #微服务名称
+  version: 0.0.1  #微服务版本号
+servicecomb:
+  tracing: #日志收集器配置
+    collector:
+      address: http://127.0.0.1:9411
+  circuitBreaker: #服务熔断
+    Provider:
+      shicifang-friend:
+        requestVolumeThreshold: 8 #10 秒内发生多少次失败后熔断.注意由于 m2 存在一个 BUG，如果设置为 N，实际上生效的值是 N-1
+  fallbackpolicy:
+    provider:
+      policy: returnnull
+  flowcontrol:  #限流配置
+    Provider:
+      qps:
+        limit:
+          gateway: 1000
+  handler: #服务处理方式包括限流、熔断、日志追踪
+    chain:
+      Provider:
+        default: qps-flowcontrol-provider,bizkeeper-provider,tracing-provider
+  rest: #rest 方式方式调用微服务，多个微服务启动注意端口冲突问题
+    address: 0.0.0.0:9081
+  service:
+    registry: #服务注册中心地址，端口默认 30100
+      address: http://127.0.0.1:30100

@@ -1,0 +1,27 @@
+APPLICATION_ID: start.servicecomb.io
+service_description:
+  name: provider
+  version: 0.0.1
+servicecomb:
+  circuitBreaker: #熔断
+    provider:
+      shicifang-qa:
+        requestVolumeThreshold: 1
+  fallbackpolicy:
+    provider:
+      policy: returnnull
+  flowcontrol: #限流
+    Provider:
+      qps:
+        limit:
+          gateway: 1000
+  handler:
+    chain:
+      Provider:
+        default: qps-flowcontrol-provider,bizkeeper-provider,tracing-provider
+  rest:
+    address: 0.0.0.0:9080
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+      autodiscovery: false
